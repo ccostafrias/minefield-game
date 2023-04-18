@@ -4,7 +4,7 @@ const resetButton = document.querySelector(".reset-button");
 const sizeBoard = 10
 const widthBoard = 10
 const heightBoard = 10
-const numMines = 10
+const numMines = 15
 
 let revealed = 0
 let firstClick = true
@@ -90,14 +90,31 @@ function setMines(mines, safeR = 0, safeC = 0) {
         let bombR = random(heightBoard - 1)
         let bombC = random(widthBoard - 1)
 
-        if (boardArray[bombR][bombC] === 0 &&
-            bombR !== safeR &&
-            bombC !== safeC
-            ) {
+        if (boardArray[bombR][bombC] !== 'B') {
+            let aroundSafe = []
+    
+            for (let r = -1; r <= 1; r++) {
+                for (let c = -1; c <= 1; c++) {
+                    if (safeR + r >= 0 && safeR + r < heightBoard) {
+                        if (safeC + c >= 0 && safeC + c < widthBoard) {
+                            aroundSafe.push([safeR + r, safeC + c])
+                        }
+                    }
+                }
+            }
 
-            boardArray[bombR][bombC] = 'B'
-            aroundMine(bombR, bombC)
-            mines--
+            const isFound = aroundSafe.find(coords => {
+                [r, c] = coords
+                if (bombR === r && bombC === c) {
+                    return coords
+                }
+            })
+    
+            if (!isFound) {
+                boardArray[bombR][bombC] = 'B'
+                aroundMine(bombR, bombC)
+                mines--
+            }
         }
     }
 }
